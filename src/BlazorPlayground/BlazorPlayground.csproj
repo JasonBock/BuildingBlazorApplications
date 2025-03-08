@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+	<ItemGroup>
+		<ProjectReference Include="..\BlazorPlayground.Client\BlazorPlayground.Client.csproj" />
+		<ProjectReference Include="..\BlazorPlayground.Components\BlazorPlayground.Components.csproj" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+	</ItemGroup>
+</Project>

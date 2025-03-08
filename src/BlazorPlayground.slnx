@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Solution Items/" Id="8ec462fd-d22e-90a8-e5ce-7e832ba40c5d">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Project Path="BlazorPlayground.Client/BlazorPlayground.Client.csproj" />
+  <Project Path="BlazorPlayground.Components/BlazorPlayground.Components.csproj" />
+  <Project Path="BlazorPlayground/BlazorPlayground.csproj" />
+</Solution>

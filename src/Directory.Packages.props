@@ -1,5 +1,8 @@
 <Project>
   <ItemGroup>
-
+    <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="9.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.2" />
+    <PackageVersion Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
   </ItemGroup>
 </Project>
