@@ -13,6 +13,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="NUnit3TestAdapter" />
+		<PackageReference Include="Rocks" />
 	</ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\BlazorPlayground.Components\BlazorPlayground.Components.csproj" />
