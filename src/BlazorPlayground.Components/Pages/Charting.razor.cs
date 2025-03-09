@@ -22,15 +22,15 @@ public sealed partial class Charting
 		{
 			try
 			{
-				var sequence = CollatzSequenceGenerator.Generate<int>(value);
+				var sequence = CollatzSequenceGenerator.Generate(value);
 				this.CurrentSequence = string.Join(", ", sequence);
 				var labels = sequence.Length > 0 ?
 					[.. Enumerable.Range(1, sequence.Length).Select(_ => _.ToString(CultureInfo.CurrentCulture))] :
 					Array.Empty<string>();
 
 				var module = await this.jsRuntime.InvokeAsync<IJSObjectReference>(
-					Constants.Import, Constants.ChartsFileLocation);
-				await module.InvokeAsync<object>(Constants.ChartsMethod,
+					Constants.Import, Constants.ChartingFileLocation);
+				await module.InvokeAsync<object>(Constants.ChartingMethod,
 					this.ChartReference,
 					sequence, labels);
 			}

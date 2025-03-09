@@ -9,9 +9,18 @@ public static class CounterTests
 	[Test]
 	public static void IncrementViaClick()
 	{
-		using var context = new Bunit.TestContext();
+		using var context = new BUnitTestContext();
 		var counter = context.RenderComponent<Counter>();
-		counter.Find("button").Click();
-		counter.Find("p").MarkupMatches("""<p role="status">Current count: 1</p>""");
+		var counterCount = counter.Find("p");
+		var counterButton = counter.Find("button");
+
+		Assert.Multiple(() =>
+		{
+			Assert.That(counterCount.ToMarkup(),
+				Does.Contain("""<p role="status">Current count: 0</p>"""));
+			counterButton.Click();
+			Assert.That(counterCount.ToMarkup(),
+				Does.Contain("""<p role="status">Current count: 1</p>"""));
+		});
 	}
 }
