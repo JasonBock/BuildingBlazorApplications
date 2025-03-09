@@ -1,0 +1,13 @@
+@page "/charting"
+@rendermode InteractiveAuto
+
+<h1>Charting</h1>
+
+<p>
+    <input type="text" @bind="this.Start" />
+    <button class="btn btn-primary" @onclick="this.CreateSequenceAsync">Create Sequence</button>
+</p>
+
+<p id="currentSequence">Current sequence: @this.CurrentSequence</p>
+
+<canvas @ref=this.ChartReference width="800" height="600"></canvas>

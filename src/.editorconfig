@@ -56,6 +56,11 @@ dotnet_diagnostic.CA1812.severity = none
 # CA2007: Consider calling ConfigureAwait
 dotnet_diagnostic.CA2007.severity = none
 
+# RS1024: Compare symbols correctly
+# TODO: Adding SymbolEqualityComparer.Default should fix this,
+# but...then it casts down to a ISymbol?, which leads to other problems.
+dotnet_diagnostic.RS1024.severity = none
+
 # IDE0055 - ignoring this because it's just flat-out annoying 
 # in VS 2022 Preview 5
 dotnet_diagnostic.IDE0055.severity = none

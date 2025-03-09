@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
-	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<ImplicitUsings>enable</ImplicitUsings>
-	</PropertyGroup>
+	<ItemGroup>
+		<Content Include="Pages\Charting.razor.js" />
+		<Content Include="Pages\Location.razor.js" />
+	</ItemGroup>
 	<ItemGroup>
 		<SupportedPlatform Include="browser" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="Collatz" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
 		<!--<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
