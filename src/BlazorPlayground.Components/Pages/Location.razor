@@ -6,15 +6,15 @@
 
 <p>Calculations are being made at:</p>
 <ul>
-    <li>Latitude: @this.latitude</li>
-    <li>Longitude: @this.longitude</li>
-    <li>Accuracy: @this.accuracy (in meters)</li>
+    <li id="latitudeId">Latitude: @this.Latitude</li>
+    <li id="longitudeId">Longitude: @this.Longitude</li>
+    <li id="accuracyId">Accuracy: @this.Accuracy (in meters)</li>
 </ul>
 <!--From https://www.bing.com/maps/embed-a-map-->
 <div>
-    <iframe width="500" height="400" frameborder="0" src="@this.bingMainUrl" scrolling="no"></iframe>
+    <iframe id="map" width="500" height="400" frameborder="0" src="@this.BingMainUrl" scrolling="no"></iframe>
     <div style="white-space: nowrap; text-align: center; width: 500px; padding: 6px 0;">
-        <a id="largeMapLink" href="@this.bingLargeMapUrl" target="_blank">View Larger Map</a> &nbsp; | &nbsp;
-        <a id="dirMapLink" href="@this.bingDirectionsUrl" target="_blank">Get Directions</a>
+        <a id="largeMapLink" href="@this.BingLargeMapUrl" target="_blank">View Larger Map</a> &nbsp; | &nbsp;
+        <a id="dirMapLink" href="@this.BingDirectionsUrl" target="_blank">Get Directions</a>
     </div>
 </div>

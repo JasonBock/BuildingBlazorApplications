@@ -75,6 +75,7 @@ public static class ChartingTests
 
 		using var context = new BUnitTestContext();
 		context.Services.Add(new(typeof(IJSRuntime), runtimeExpectations.Instance()));
+
 		var charting = context.RenderComponent<Charting>();
 		var chartingButton = charting.Find("button");
 		var chartingInput = charting.Find("input");
