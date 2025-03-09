@@ -5,6 +5,7 @@
     <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="BlazorPlayground.Client/BlazorPlayground.Client.csproj" />
+  <Project Path="BlazorPlayground.Components.Tests/BlazorPlayground.Components.Tests.csproj" Id="fd80b316-e85a-40d1-87d8-79caa26afede" />
   <Project Path="BlazorPlayground.Components/BlazorPlayground.Components.csproj" />
   <Project Path="BlazorPlayground/BlazorPlayground.csproj" />
 </Solution>
