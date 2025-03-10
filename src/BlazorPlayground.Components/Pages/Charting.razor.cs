@@ -30,7 +30,7 @@ public sealed partial class Charting
 
 				var module = await this.jsRuntime.InvokeAsync<IJSObjectReference>(
 					Constants.Import, Constants.ChartingFileLocation);
-				await module.InvokeAsync<object>(Constants.ChartingMethod,
+				await module.InvokeVoidAsync(Constants.ChartingMethod,
 					this.ChartReference,
 					sequence, labels);
 			}

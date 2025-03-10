@@ -3,6 +3,7 @@ using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
+using Microsoft.JSInterop.Infrastructure;
 using NUnit.Framework;
 using Rocks;
 using System.Collections.Immutable;
@@ -18,7 +19,7 @@ public static class ChartingTests
 		context.JSInterop.Mode = JSRuntimeMode.Strict;
 
 		var chartingInterop = context.JSInterop.SetupModule(Constants.ChartingFileLocation);
-		chartingInterop.Setup<object>(Constants.ChartingMethod, new InvocationMatcher(target =>
+		chartingInterop.SetupVoid(Constants.ChartingMethod, new InvocationMatcher(target =>
 		{
 			Assert.That(target.Arguments[0] is ElementReference);
 
@@ -30,7 +31,7 @@ public static class ChartingTests
 
 			return true;
 		}))
-		.SetResult(Task.CompletedTask);
+		.SetVoidResult();
 
 		var charting = context.RenderComponent<Charting>();
 		var chartingButton = charting.Find("button");
@@ -51,7 +52,7 @@ public static class ChartingTests
 	{
 #pragma warning disable CA2012 // Use ValueTasks correctly
 		var objectReferenceExpectations = new IJSObjectReferenceCreateExpectations();
-		objectReferenceExpectations.Methods.InvokeAsync<object>(
+		objectReferenceExpectations.Methods.InvokeAsync<IJSVoidResult>(
 			Constants.ChartingMethod,
 			Arg.Validate<object?[]?>(values =>
 			{
@@ -65,7 +66,7 @@ public static class ChartingTests
 
 				return true;
 			}))
-			.ReturnValue(ValueTask.FromResult<object>(new()));
+			.ReturnValue(ValueTask.FromResult(new IJSVoidResultMakeExpectations().Instance()));
 
 		var runtimeExpectations = new IJSRuntimeCreateExpectations();
 		runtimeExpectations.Methods.InvokeAsync<IJSObjectReference>(

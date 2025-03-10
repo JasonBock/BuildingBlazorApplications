@@ -1,6 +1,7 @@
 ﻿using BlazorPlayground.Components.Pages;
 using Bunit;
 using Microsoft.JSInterop;
+using Microsoft.JSInterop.Infrastructure;
 using NUnit.Framework;
 using Rocks;
 
@@ -19,13 +20,13 @@ public static class LocationTests
 		context.JSInterop.Mode = JSRuntimeMode.Strict;
 
 		var locationInterop = context.JSInterop.SetupModule(Constants.LocationFileLocation);
-		locationInterop.Setup<object>(Constants.LocationMethod, new InvocationMatcher(target =>
+		locationInterop.SetupVoid(Constants.LocationMethod, new InvocationMatcher(target =>
 		{
 			var reference = (DotNetObjectReference<Location>)target.Arguments[0]!;
 			reference.Value.Change(latitude, longitude, accuracy);
 			return true;
 		}))
-		.SetResult(Task.CompletedTask);
+		.SetVoidResult();
 
 		var location = context.RenderComponent<Location>();
 		location.Render();
@@ -62,7 +63,7 @@ public static class LocationTests
 
 #pragma warning disable CA2012 // Use ValueTasks correctly
 		var objectReferenceExpectations = new IJSObjectReferenceCreateExpectations();
-		objectReferenceExpectations.Methods.InvokeAsync<object>(
+		objectReferenceExpectations.Methods.InvokeAsync<IJSVoidResult>(
 			Constants.LocationMethod,
 			Arg.Validate<object?[]?>(values =>
 			{
@@ -70,7 +71,7 @@ public static class LocationTests
 				reference.Value.Change(latitude, longitude, accuracy);
 				return true;
 			}))
-			.ReturnValue(ValueTask.FromResult<object>(new()));
+			.ReturnValue(ValueTask.FromResult(new IJSVoidResultMakeExpectations().Instance()));
 
 		var runtimeExpectations = new IJSRuntimeCreateExpectations();
 		runtimeExpectations.Methods.InvokeAsync<IJSObjectReference>(
