@@ -1,5 +1,4 @@
-﻿using Collatz;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System.Globalization;
 
@@ -8,9 +7,10 @@ namespace BlazorPlayground.Components.Pages;
 public sealed partial class Charting
 {
 	private readonly IJSRuntime jsRuntime;
+	private readonly ICollatz collatz;
 
-	public Charting(IJSRuntime jsRuntime) =>
-		this.jsRuntime = jsRuntime;
+	public Charting(IJSRuntime jsRuntime, ICollatz collatz) =>
+		(this.jsRuntime, this.collatz) = (jsRuntime, collatz);
 
 	private ElementReference ChartReference { get; set; }
 	public string CurrentSequence { get; set; } = string.Empty;
@@ -22,7 +22,7 @@ public sealed partial class Charting
 		{
 			try
 			{
-				var sequence = CollatzSequenceGenerator.Generate(value);
+				var sequence = this.collatz.Generate(value);
 				this.CurrentSequence = string.Join(", ", sequence);
 				var labels = sequence.Length > 0 ?
 					[.. Enumerable.Range(1, sequence.Length).Select(_ => _.ToString(CultureInfo.CurrentCulture))] :

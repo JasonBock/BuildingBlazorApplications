@@ -1,11 +1,14 @@
 using BlazorPlayground.Components;
+using BlazorPlayground.Components.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
-    .AddInteractiveWebAssemblyComponents();
+	 .AddInteractiveServerComponents()
+	 .AddInteractiveWebAssemblyComponents();
+
+builder.Services.AddPlaygroundConfiguration();
 
 var app = builder.Build();
 

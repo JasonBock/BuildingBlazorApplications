@@ -1,7 +1,9 @@
-﻿using BlazorPlayground.Components.Pages;
+﻿using BlazorPlayground.Components.Extensions;
+using BlazorPlayground.Components.Pages;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Microsoft.JSInterop.Infrastructure;
 using NUnit.Framework;
@@ -16,6 +18,7 @@ public static class ChartingTests
 	public static async Task CreateSequenceWithEmulatorAsync()
 	{
 		using var context = new BUnitTestContext();
+		context.Services.AddPlaygroundConfiguration();
 		context.JSInterop.Mode = JSRuntimeMode.Strict;
 
 		var chartingInterop = context.JSInterop.SetupModule(Constants.ChartingFileLocation);
@@ -50,6 +53,10 @@ public static class ChartingTests
 	[Test]
 	public static async Task CreateSequenceWithMockAsync()
 	{
+		var collatzExpectations = new ICollatzCreateExpectations();
+		collatzExpectations.Methods.Generate<int>(5)
+			.ReturnValue([5, 8, 4, 2, 1]);
+
 #pragma warning disable CA2012 // Use ValueTasks correctly
 		var objectReferenceExpectations = new IJSObjectReferenceCreateExpectations();
 		objectReferenceExpectations.Methods.InvokeAsync<IJSVoidResult>(
@@ -75,6 +82,7 @@ public static class ChartingTests
 #pragma warning restore CA2012 // Use ValueTasks correctly
 
 		using var context = new BUnitTestContext();
+		context.Services.AddSingleton(collatzExpectations.Instance());
 		context.Services.Add(new(typeof(IJSRuntime), runtimeExpectations.Instance()));
 
 		var charting = context.RenderComponent<Charting>();
@@ -92,5 +100,6 @@ public static class ChartingTests
 
 		objectReferenceExpectations.Verify();
 		runtimeExpectations.Verify();
+		collatzExpectations.Verify();
 	}
 }
