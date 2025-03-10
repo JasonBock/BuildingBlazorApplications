@@ -13,5 +13,6 @@
 		<PackageReference Include="Collatz" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.Web" />
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
+		<PackageReference Include="Microsoft.Extensions.Http" />
 	</ItemGroup>
 </Project>

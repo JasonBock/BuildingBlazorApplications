@@ -6,15 +6,25 @@ namespace BlazorPlayground.Components.Pages;
 
 public sealed partial class Charting
 {
+	private readonly IHttpClientFactory httpClientFactory;
 	private readonly IJSRuntime jsRuntime;
 	private readonly ICollatz collatz;
 
-	public Charting(IJSRuntime jsRuntime, ICollatz collatz) =>
-		(this.jsRuntime, this.collatz) = (jsRuntime, collatz);
+	public Charting(IJSRuntime jsRuntime, IHttpClientFactory httpClientFactory, ICollatz collatz) =>
+		(this.jsRuntime, this.httpClientFactory, this.collatz) = (jsRuntime, httpClientFactory, collatz);
 
 	private ElementReference ChartReference { get; set; }
 	public string CurrentSequence { get; set; } = string.Empty;
 	public string? Start { get; set; }
+
+	private async Task CreateRandomStartValueAsync()
+	{
+		using var client = this.httpClientFactory.CreateClient("Playground");
+		var content = await client.GetStringAsync(new Uri(client.BaseAddress!, new Uri("random", UriKind.Relative)));
+		this.Start = content.Replace("\\n", string.Empty, StringComparison.CurrentCulture)
+			.Replace("\"", string.Empty, StringComparison.CurrentCulture);
+		await this.CreateSequenceAsync();
+	}
 
 	private async Task CreateSequenceAsync()
 	{

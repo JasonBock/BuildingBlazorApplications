@@ -1,14 +1,23 @@
 using BlazorPlayground.Components;
 using BlazorPlayground.Components.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-	 .AddInteractiveServerComponents()
-	 .AddInteractiveWebAssemblyComponents();
+	.AddInteractiveServerComponents()
+	.AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddPlaygroundConfiguration();
+builder.Services.AddHttpClient(
+	"Playground",
+	client => client.BaseAddress = new Uri("http://localhost:5128"));
+builder.Services.AddCors(
+	 options => options.AddDefaultPolicy(
+		  policy => policy.WithOrigins(["http://localhost:5128"])
+				.AllowAnyMethod()
+				.AllowAnyHeader()));
 
 var app = builder.Build();
 
@@ -32,5 +41,19 @@ app.MapRazorComponents<App>()
 	.AddAdditionalAssemblies(
 		typeof(BlazorPlayground.Client._Imports).Assembly,
 		typeof(BlazorPlayground.Components.Pages.Counter).Assembly);
+
+
+app.MapGet("/random", async ([FromServices] IHttpClientFactory httpClientFactory) =>
+{
+	using var client = httpClientFactory.CreateClient();
+
+	// https://www.random.org/clients/http/api/
+	// Let's get one number between 1 and 1_000_000,
+	// 1 column, base 10, in plain text format.
+	var response = await client.GetAsync(
+		 new Uri("https://www.random.org/integers/?num=1&min=1&max=1000000&col=1&base=10&format=plain&rnd=new"));
+	var content = await response.Content.ReadAsStringAsync();
+	return Results.Ok(content);
+});
 
 app.Run();

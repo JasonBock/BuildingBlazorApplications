@@ -4,8 +4,12 @@
 <h1>Charting</h1>
 
 <p>
+    <button id="random" class="btn btn-primary" @onclick="this.CreateRandomStartValueAsync">Create Random Start Value</button>
+</p>
+
+<p>
     <input type="text" @bind="this.Start" />
-    <button class="btn btn-primary" @onclick="this.CreateSequenceAsync">Create Sequence</button>
+    <button id="start" class="btn btn-primary" @onclick="this.CreateSequenceAsync">Create Sequence</button>
 </p>
 
 <p id="currentSequence">Current sequence: @this.CurrentSequence</p>
