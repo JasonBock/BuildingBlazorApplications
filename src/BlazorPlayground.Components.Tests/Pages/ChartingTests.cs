@@ -1,5 +1,4 @@
-﻿using AngleSharp.Io;
-using BlazorPlayground.Components.Extensions;
+﻿using BlazorPlayground.Components.Extensions;
 using BlazorPlayground.Components.Pages;
 using Bunit;
 using Microsoft.AspNetCore.Components;
