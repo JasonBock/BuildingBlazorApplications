@@ -13,9 +13,7 @@ public partial class Counter
 
 	private void IncrementCount()
 	{
-#pragma warning disable CA1848 // Use the LoggerMessage delegates
 		this.logger.LogInformation("Incrementing count.");
-#pragma warning restore CA1848 // Use the LoggerMessage delegates
 		this.currentCount++;
 	}
 }

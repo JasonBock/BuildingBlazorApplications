@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 	<PropertyGroup>
-		<NoWarn>$(NoWarn),CA1056</NoWarn>
+		<NoWarn>$(NoWarn),CA1056,CA1848,CA2254</NoWarn>
 	</PropertyGroup>
 	<ItemGroup>
 		<Content Include="Pages\Charting.razor.js" />
