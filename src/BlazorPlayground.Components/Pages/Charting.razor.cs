@@ -53,7 +53,5 @@ public sealed partial class Charting
 		{
 			this.CurrentSequence = $"{this.Start} is not a valid integer.";
 		}
-
-		this.StateHasChanged();
 	}
 }

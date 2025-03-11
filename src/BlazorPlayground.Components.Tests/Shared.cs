@@ -1,5 +1,6 @@
 ﻿global using BUnitTestContext = Bunit.TestContext;
 using BlazorPlayground.Components;
+using Microsoft.Extensions.Logging;
 using Microsoft.JSInterop;
 using Microsoft.JSInterop.Infrastructure;
 using NUnit.Framework;
@@ -12,3 +13,4 @@ using Rocks;
 [assembly: Rock(typeof(IJSObjectReference), BuildType.Create)]
 [assembly: Rock(typeof(IJSRuntime), BuildType.Create)]
 [assembly: Rock(typeof(IJSVoidResult), BuildType.Make)]
+[assembly: Rock(typeof(ILogger<>), BuildType.Make)]
