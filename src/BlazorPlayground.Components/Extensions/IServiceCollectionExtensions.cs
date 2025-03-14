@@ -8,8 +8,5 @@ public static class IServiceCollectionExtensions
 	   this IServiceCollection @self) => 
 		self.AddSingleton<ICollatz, Collatz>()
 			.AddSingleton<IIdentifier, Identifier>()
-			.AddHttpClient(
-				"Playground",
-				client => 
-					client.BaseAddress = new Uri("http://localhost:5128")).Services;
+			.AddHttpClient();
 }
