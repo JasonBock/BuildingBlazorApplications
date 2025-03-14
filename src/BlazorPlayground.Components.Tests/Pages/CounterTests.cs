@@ -1,5 +1,6 @@
 ﻿using BlazorPlayground.Components.Pages;
 using Bunit;
+using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
@@ -12,6 +13,7 @@ public static class CounterTests
 	public static void IncrementViaClick()
 	{
 		var id = Guid.NewGuid();
+		const string renderName = "Server";
 
 		var identifierExpectations = new IIdentifierCreateExpectations();
 		identifierExpectations.Properties.Getters.Id()
@@ -20,14 +22,19 @@ public static class CounterTests
 		using var context = new BUnitTestContext();
 		context.Services.AddSingleton(new ILoggerMakeExpectations<Counter>().Instance());
 		context.Services.AddSingleton(identifierExpectations.Instance());
+		context.Renderer.SetRendererInfo(
+			new RendererInfo(renderName, true));
 
 		var counter = context.RenderComponent<Counter>();
+		var counterRender = counter.Find("#render");
 		var counterId = counter.Find("#id");
 		var counterCount = counter.Find("#count");
 		var counterButton = counter.Find("button");
 
 		Assert.Multiple(() =>
 		{
+			Assert.That(counterRender.ToMarkup(),
+				Does.Contain(renderName));
 			Assert.That(counterId.ToMarkup(),
 				Does.Contain(id.ToString()));
 			Assert.That(counterCount.ToMarkup(),

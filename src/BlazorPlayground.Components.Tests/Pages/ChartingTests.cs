@@ -119,16 +119,17 @@ public static class ChartingTests
 		messageHandlerExpectations.Methods.SendAsync(
 			Arg.Validate<HttpRequestMessage>(_ =>
 			{
-				Assert.That(_.RequestUri, Is.EqualTo(new Uri("https://localhost/random")));
+				Assert.That(_.RequestUri, 
+					Is.EqualTo(new Uri("http://localhost:5128/random")));
 				return true;
 			}), Arg.Any<CancellationToken>())
 			.ReturnValue(Task.FromResult(response));
 
 		using var messageHandler = messageHandlerExpectations.Instance();
-		using var client = new HttpClient(messageHandler) { BaseAddress = new Uri("https://localhost") };
+		using var client = new HttpClient(messageHandler);
 
 		var clientFactoryExpectations = new IHttpClientFactoryCreateExpectations();
-		clientFactoryExpectations.Methods.CreateClient("Playground")
+		clientFactoryExpectations.Methods.CreateClient(Arg.Any<string>())
 			.ReturnValue(client);
 
 		var collatzExpectations = new ICollatzCreateExpectations();

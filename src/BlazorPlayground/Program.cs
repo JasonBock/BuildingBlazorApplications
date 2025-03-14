@@ -10,14 +10,6 @@ builder.Services.AddRazorComponents()
 	.AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddPlaygroundConfiguration();
-builder.Services.AddHttpClient(
-	"Playground",
-	client => client.BaseAddress = new Uri("http://localhost:5128"));
-builder.Services.AddCors(
-	 options => options.AddDefaultPolicy(
-		  policy => policy.WithOrigins(["http://localhost:5128"])
-				.AllowAnyMethod()
-				.AllowAnyHeader()));
 
 var app = builder.Build();
 

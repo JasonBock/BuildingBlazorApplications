@@ -19,8 +19,9 @@ public sealed partial class Charting
 
 	private async Task CreateRandomStartValueAsync()
 	{
-		using var client = this.httpClientFactory.CreateClient("Playground");
-		var content = await client.GetStringAsync(new Uri(client.BaseAddress!, new Uri("random", UriKind.Relative)));
+		using var client = this.httpClientFactory.CreateClient();
+		var content = await client.GetStringAsync(
+			new Uri("http://localhost:5128/random"));
 		this.Start = content.Replace("\\n", string.Empty, StringComparison.CurrentCulture)
 			.Replace("\"", string.Empty, StringComparison.CurrentCulture);
 		await this.CreateSequenceAsync();
