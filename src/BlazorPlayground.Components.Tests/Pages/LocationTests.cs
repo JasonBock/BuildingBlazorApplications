@@ -98,12 +98,18 @@ public static class LocationTests
 			Assert.That(locationInstance.BingDirectionsUrl,
 				Is.EqualTo("https://www.bing.com/maps/directions?cp=1~-2&amp;sty=r&amp;lvl=11&amp;rtp=~pos.1_2____&amp;FORM=MBEDLD"));
 
-			Assert.That(location.Find("#latitudeId").ToMarkup(), Does.Contain("Latitude: 1"));
-			Assert.That(location.Find("#longitudeId").ToMarkup(), Does.Contain("Longitude: 2"));
-			Assert.That(location.Find("#accuracyId").ToMarkup(), Does.Contain("Accuracy: 3"));
-			Assert.That(location.Find("#map").Attributes["src"]!.Value, Is.EqualTo(locationInstance.BingMainUrl));
-			Assert.That(location.Find("#largeMapLink").Attributes["href"]!.Value, Is.EqualTo(locationInstance.BingLargeMapUrl));
-			Assert.That(location.Find("#dirMapLink").Attributes["href"]!.Value, Is.EqualTo(locationInstance.BingDirectionsUrl));
+			Assert.That(location.Find("#latitudeId").ToMarkup(), 
+				Does.Contain("Latitude: 1"));
+			Assert.That(location.Find("#longitudeId").ToMarkup(), 
+				Does.Contain("Longitude: 2"));
+			Assert.That(location.Find("#accuracyId").ToMarkup(), 
+				Does.Contain("Accuracy: 3"));
+			Assert.That(location.Find("#map").Attributes["src"]!.Value, 
+				Is.EqualTo(locationInstance.BingMainUrl));
+			Assert.That(location.Find("#largeMapLink").Attributes["href"]!.Value, 
+				Is.EqualTo(locationInstance.BingLargeMapUrl));
+			Assert.That(location.Find("#dirMapLink").Attributes["href"]!.Value, 
+				Is.EqualTo(locationInstance.BingDirectionsUrl));
 		});
 
 		objectReferenceExpectations.Verify();

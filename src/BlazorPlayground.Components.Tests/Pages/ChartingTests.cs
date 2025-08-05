@@ -20,10 +20,12 @@ public static class ChartingTests
 	{
 		using var context = new BUnitTestContext();
 		context.Services.AddPlaygroundConfiguration();
-		context.Services.AddSingleton(new IHttpClientFactoryMakeExpectations().Instance());
+		context.Services.AddSingleton(
+			new IHttpClientFactoryMakeExpectations().Instance());
 		context.JSInterop.Mode = JSRuntimeMode.Strict;
 
-		var chartingInterop = context.JSInterop.SetupModule(Constants.ChartingFileLocation);
+		var chartingInterop = context.JSInterop.SetupModule(
+			Constants.ChartingFileLocation);
 		chartingInterop.SetupVoid(Constants.ChartingMethod, new InvocationMatcher(target =>
 		{
 			Assert.That(target.Arguments[0] is ElementReference);
