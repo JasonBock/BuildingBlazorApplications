@@ -28,7 +28,6 @@ public sealed partial class Location
 
 			var module = await this.jsRuntime.InvokeAsync<IJSObjectReference>(
 				Constants.Import, Constants.LocationFileLocation);
-
 			await module.InvokeVoidAsync(
 				Constants.LocationMethod, this.reference);
 		}
