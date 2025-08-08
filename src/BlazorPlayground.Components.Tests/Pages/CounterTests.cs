@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
+using Rocks;
 
 namespace BlazorPlayground.Components.Tests.Pages;
 
@@ -15,9 +16,11 @@ public static class CounterTests
 		var id = Guid.NewGuid();
 		const string renderName = "Server";
 
-		var identifierExpectations = new IIdentifierCreateExpectations();
+		using var mockContext = new RockContext();
+		var identifierExpectations = mockContext.Create<IIdentifierCreateExpectations>();
 		identifierExpectations.Properties.Getters.Id()
-			.ReturnValue(id).ExpectedCallCount(2);
+			.ReturnValue(id)
+			.ExpectedCallCount(2);
 
 		using var context = new BUnitTestContext();
 		context.Services.AddSingleton(new ILoggerMakeExpectations<Counter>().Instance());
@@ -31,7 +34,7 @@ public static class CounterTests
 		var counterCount = counter.Find("#count");
 		var counterButton = counter.Find("button");
 
-		Assert.Multiple(() =>
+		using (Assert.EnterMultipleScope())
 		{
 			Assert.That(counterRender.ToMarkup(),
 				Does.Contain(renderName));
@@ -42,8 +45,6 @@ public static class CounterTests
 			counterButton.Click();
 			Assert.That(counterCount.ToMarkup(),
 				Does.Contain("""<p id="count" role="status">Current count: 1</p>"""));
-		});
-
-		identifierExpectations.Verify();
+		}
 	}
 }

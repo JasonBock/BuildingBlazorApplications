@@ -31,7 +31,7 @@ public static class LocationTests
 		var location = context.RenderComponent<Location>();
 		location.Render();
 
-		Assert.Multiple(() =>
+		using (Assert.EnterMultipleScope())
 		{
 			var locationInstance = location.Instance;
 
@@ -51,7 +51,7 @@ public static class LocationTests
 			Assert.That(location.Find("#map").Attributes["src"]!.Value, Is.EqualTo(locationInstance.BingMainUrl));
 			Assert.That(location.Find("#largeMapLink").Attributes["href"]!.Value, Is.EqualTo(locationInstance.BingLargeMapUrl));
 			Assert.That(location.Find("#dirMapLink").Attributes["href"]!.Value, Is.EqualTo(locationInstance.BingDirectionsUrl));
-		});
+		}
 	}
 
 	[Test]
@@ -61,8 +61,8 @@ public static class LocationTests
 		const double longitude = 2.0d;
 		const double accuracy = 3.0d;
 
-#pragma warning disable CA2012 // Use ValueTasks correctly
-		var objectReferenceExpectations = new IJSObjectReferenceCreateExpectations();
+		using var mockContext = new RockContext();
+		var objectReferenceExpectations = mockContext.Create<IJSObjectReferenceCreateExpectations>();
 		objectReferenceExpectations.Methods.InvokeAsync<IJSVoidResult>(
 			Constants.LocationMethod,
 			Arg.Validate<object?[]?>(values =>
@@ -73,18 +73,17 @@ public static class LocationTests
 			}))
 			.ReturnValue(ValueTask.FromResult(new IJSVoidResultMakeExpectations().Instance()));
 
-		var runtimeExpectations = new IJSRuntimeCreateExpectations();
+		var runtimeExpectations = mockContext.Create<IJSRuntimeCreateExpectations>();
 		runtimeExpectations.Methods.InvokeAsync<IJSObjectReference>(
 			 Constants.Import, new object?[] { Constants.LocationFileLocation })
 			 .ReturnValue(ValueTask.FromResult(objectReferenceExpectations.Instance()));
-#pragma warning restore CA2012 // Use ValueTasks correctly
 
 		using var context = new BUnitTestContext();
 		context.Services.Add(new(typeof(IJSRuntime), runtimeExpectations.Instance()));
 		var location = context.RenderComponent<Location>();
 		location.Render();
 
-		Assert.Multiple(() =>
+		using (Assert.EnterMultipleScope())
 		{
 			var locationInstance = location.Instance;
 
@@ -110,9 +109,6 @@ public static class LocationTests
 				Is.EqualTo(locationInstance.BingLargeMapUrl));
 			Assert.That(location.Find("#dirMapLink").Attributes["href"]!.Value, 
 				Is.EqualTo(locationInstance.BingDirectionsUrl));
-		});
-
-		objectReferenceExpectations.Verify();
-		runtimeExpectations.Verify();
+		}
 	}
 }

@@ -34,7 +34,6 @@ app.MapRazorComponents<App>()
 		typeof(BlazorPlayground.Client._Imports).Assembly,
 		typeof(BlazorPlayground.Components.Pages.Counter).Assembly);
 
-
 app.MapGet("/random", async ([FromServices] IHttpClientFactory httpClientFactory) =>
 {
 	using var client = httpClientFactory.CreateClient();
