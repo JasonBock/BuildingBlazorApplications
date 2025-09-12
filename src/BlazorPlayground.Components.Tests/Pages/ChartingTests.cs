@@ -30,7 +30,7 @@ public static class ChartingTests
 				Constants.ChartingFileLocation);
 			chartingInterop.SetupVoid(Constants.ChartingMethod, new InvocationMatcher(target =>
 			{
-				Assert.That(target.Arguments[0] is ElementReference);
+				Assert.That(target.Arguments[0], Is.InstanceOf<ElementReference>());
 
 				var sequence = (ImmutableArray<int>)target.Arguments[1]!;
 				Assert.That(sequence, Is.EquivalentTo([5, 8, 4, 2, 1]));
@@ -69,7 +69,7 @@ public static class ChartingTests
 				Constants.ChartingMethod,
 				Arg.Validate<object?[]?>(values =>
 				{
-					Assert.That(values![0] is ElementReference);
+					Assert.That(values![0], Is.InstanceOf<ElementReference>());
 
 					var sequence = (ImmutableArray<int>)values[1]!;
 					Assert.That(sequence, Is.EquivalentTo([5, 8, 4, 2, 1]));
@@ -141,7 +141,7 @@ public static class ChartingTests
 				Constants.ChartingMethod,
 				Arg.Validate<object?[]?>(values =>
 				{
-					Assert.That(values![0] is ElementReference);
+					Assert.That(values![0], Is.InstanceOf<ElementReference>());
 
 					var sequence = (ImmutableArray<int>)values[1]!;
 					Assert.That(sequence, Is.EquivalentTo([5, 8, 4, 2, 1]));
