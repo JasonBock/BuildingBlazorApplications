@@ -3,48 +3,45 @@ using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NUnit.Framework;
 using Rocks;
 
 namespace BlazorPlayground.Components.Tests.Pages;
 
-public static class CounterTests
+public sealed class CounterTests
 {
 	[Test]
-	public static void IncrementViaClick()
+	public async Task IncrementViaClickAsync()
 	{
 		var id = Guid.NewGuid();
 		const string renderName = "Server";
 
 		using var mockContext = new RockContext();
 		var identifierExpectations = mockContext.Create<IIdentifierCreateExpectations>();
-		identifierExpectations.Properties.Getters.Id()
+		identifierExpectations.Setups.Id.Gets()
 			.ReturnValue(id)
 			.ExpectedCallCount(2);
 
-		using var context = new BUnitTestContext();
+		using var context = new BunitContext();
 		context.Services.AddSingleton(new ILoggerMakeExpectations<Counter>().Instance());
 		context.Services.AddSingleton(identifierExpectations.Instance());
 		context.Renderer.SetRendererInfo(
 			new RendererInfo(renderName, true));
 
-		var counter = context.RenderComponent<Counter>();
+		var counter = context.Render<Counter>();
 		var counterRender = counter.Find("#render");
 		var counterId = counter.Find("#id");
 		var counterCount = counter.Find("#count");
 		var counterButton = counter.Find("button");
 
-		using (Assert.EnterMultipleScope())
+		using (Assert.Multiple())
 		{
-			Assert.That(counterRender.ToMarkup(),
-				Does.Contain(renderName));
-			Assert.That(counterId.ToMarkup(),
-				Does.Contain(id.ToString()));
-			Assert.That(counterCount.ToMarkup(),
-				Does.Contain("""<p id="count" role="status">Current count: 0</p>"""));
-			counterButton.Click();
-			Assert.That(counterCount.ToMarkup(),
-				Does.Contain("""<p id="count" role="status">Current count: 1</p>"""));
+			await Assert.That(counterRender.TextContent).Contains(renderName);
+			await Assert.That(counterId.TextContent).Contains(id.ToString());
+			await Assert.That(counterCount.TextContent).Contains("Current count: 0");
+
+			await counterButton.ClickAsync();
+
+			await Assert.That(counterCount.TextContent).Contains("Current count: 1");
 		}
 	}
 }
