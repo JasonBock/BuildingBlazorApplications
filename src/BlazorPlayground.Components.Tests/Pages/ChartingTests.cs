@@ -130,9 +130,9 @@ public sealed class ChartingTests
 				.Callback((message, token) =>
 				{
 					requestMessage = message;
-#pragma warning disable CA2025 // Do not pass 'IDisposable' instances into unawaited tasks
-				   return Task.FromResult(response);
-#pragma warning restore CA2025 // Do not pass 'IDisposable' instances into unawaited tasks
+			#pragma warning disable CA2025 // Do not pass 'IDisposable' instances into unawaited tasks
+					return Task.FromResult(response);
+			#pragma warning restore CA2025 // Do not pass 'IDisposable' instances into unawaited tasks
 				});
 
 			using var messageHandler = messageHandlerExpectations.Instance();
