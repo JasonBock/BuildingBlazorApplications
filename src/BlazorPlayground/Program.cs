@@ -23,7 +23,7 @@ else
 	app.UseExceptionHandler("/Error", createScopeForErrors: true);
 }
 
-
+app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
 app.UseAntiforgery();
 
 app.MapStaticAssets();
@@ -31,7 +31,6 @@ app.MapRazorComponents<App>()
 	.AddInteractiveServerRenderMode()
 	.AddInteractiveWebAssemblyRenderMode()
 	.AddAdditionalAssemblies(
-		typeof(BlazorPlayground.Client._Imports).Assembly,
 		typeof(BlazorPlayground.Components.Pages.Counter).Assembly);
 
 app.MapGet("/random", async ([FromServices] IHttpClientFactory httpClientFactory) =>
