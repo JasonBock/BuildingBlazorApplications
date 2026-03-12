@@ -2,14 +2,15 @@
 using Bunit;
 using Microsoft.JSInterop;
 using Microsoft.JSInterop.Infrastructure;
+using NUnit.Framework;
 using Rocks;
 
 namespace BlazorPlayground.Components.Tests.Pages;
 
-public class LocationTests
+public static class LocationTests
 {
 	[Test]
-	public async Task RenderWithEmulatorAsync()
+	public static void RenderWithEmulator()
 	{
 		const double latitude = 1.0d;
 		const double longitude = 2.0d;
@@ -30,31 +31,31 @@ public class LocationTests
 		var location = context.Render<Location>();
 		location.Render();
 
-		using (Assert.Multiple())
+		using (Assert.EnterMultipleScope())
 		{
 			var locationInstance = location.Instance;
 
-			await Assert.That(locationInstance.Latitude).IsEqualTo(latitude);
-			await Assert.That(locationInstance.Longitude).IsEqualTo(longitude);
-			await Assert.That(locationInstance.Accuracy).IsEqualTo(accuracy);
-			await Assert.That(locationInstance.BingMainUrl)
-				.IsEqualTo("https://www.bing.com/maps/embed?h=400&w=500&cp=1~2&lvl=11&typ=d&sty=r&src=SHELL&FORM=MBEDV8");
-			await Assert.That(locationInstance.BingLargeMapUrl)
-				.IsEqualTo("https://www.bing.com/maps?cp=1~2&amp;sty=r&amp;lvl=11&amp;FORM=MBEDLD");
-			await Assert.That(locationInstance.BingDirectionsUrl)
-				.IsEqualTo("https://www.bing.com/maps/directions?cp=1~-2&amp;sty=r&amp;lvl=11&amp;rtp=~pos.1_2____&amp;FORM=MBEDLD");
+			Assert.That(locationInstance.Latitude, Is.EqualTo(latitude));
+			Assert.That(locationInstance.Longitude, Is.EqualTo(longitude));
+			Assert.That(locationInstance.Accuracy, Is.EqualTo(accuracy));
+			Assert.That(locationInstance.BingMainUrl,
+				Is.EqualTo("https://www.bing.com/maps/embed?h=400&w=500&cp=1~2&lvl=11&typ=d&sty=r&src=SHELL&FORM=MBEDV8"));
+			Assert.That(locationInstance.BingLargeMapUrl,
+				Is.EqualTo("https://www.bing.com/maps?cp=1~2&amp;sty=r&amp;lvl=11&amp;FORM=MBEDLD"));
+			Assert.That(locationInstance.BingDirectionsUrl,
+				Is.EqualTo("https://www.bing.com/maps/directions?cp=1~-2&amp;sty=r&amp;lvl=11&amp;rtp=~pos.1_2____&amp;FORM=MBEDLD"));
 
-			await Assert.That(location.Find("#latitudeId").TextContent).Contains("Latitude: 1");
-			await Assert.That(location.Find("#longitudeId").TextContent).Contains("Longitude: 2");
-			await Assert.That(location.Find("#accuracyId").TextContent).Contains("Accuracy: 3");
-			await Assert.That(location.Find("#map").Attributes["src"]!.Value).IsEqualTo(locationInstance.BingMainUrl);
-			await Assert.That(location.Find("#largeMapLink").Attributes["href"]!.Value).IsEqualTo(locationInstance.BingLargeMapUrl);
-			await Assert.That(location.Find("#dirMapLink").Attributes["href"]!.Value).IsEqualTo(locationInstance.BingDirectionsUrl);
+			Assert.That(location.Find("#latitudeId").TextContent, Does.Contain("Latitude: 1"));
+			Assert.That(location.Find("#longitudeId").TextContent, Does.Contain("Longitude: 2"));
+			Assert.That(location.Find("#accuracyId").TextContent, Does.Contain("Accuracy: 3"));
+			Assert.That(location.Find("#map").Attributes["src"]!.Value, Is.EqualTo(locationInstance.BingMainUrl));
+			Assert.That(location.Find("#largeMapLink").Attributes["href"]!.Value, Is.EqualTo(locationInstance.BingLargeMapUrl));
+			Assert.That(location.Find("#dirMapLink").Attributes["href"]!.Value, Is.EqualTo(locationInstance.BingDirectionsUrl));
 		}
 	}
 
 	[Test]
-	public async Task RenderWithMockAsync()
+	public static void RenderWithMock()
 	{
 		const double latitude = 1.0d;
 		const double longitude = 2.0d;
@@ -63,13 +64,14 @@ public class LocationTests
 		using var mockContext = new RockContext();
 		var objectReferenceExpectations = mockContext.Create<IJSObjectReferenceCreateExpectations>();
 		objectReferenceExpectations.Setups.InvokeAsync<IJSVoidResult>(
-			Constants.LocationMethod, Arg.Any<object?[]?>())
-			.Callback((identifier, args) =>
+			Constants.LocationMethod,
+			Arg.Validate<object?[]?>(values =>
 			{
-				var reference = (DotNetObjectReference<Location>)args![0]!;
+				var reference = (DotNetObjectReference<Location>)values![0]!;
 				reference.Value.Change(latitude, longitude, accuracy);
-				return ValueTask.FromResult(new IJSVoidResultMakeExpectations().Instance());
-			});
+				return true;
+			}))
+			.ReturnValue(ValueTask.FromResult(new IJSVoidResultMakeExpectations().Instance()));
 
 		var runtimeExpectations = mockContext.Create<IJSRuntimeCreateExpectations>();
 		runtimeExpectations.Setups.InvokeAsync<IJSObjectReference>(
@@ -81,26 +83,32 @@ public class LocationTests
 		var location = context.Render<Location>();
 		location.Render();
 
-		using (Assert.Multiple())
+		using (Assert.EnterMultipleScope())
 		{
 			var locationInstance = location.Instance;
 
-			await Assert.That(locationInstance.Latitude).IsEqualTo(latitude);
-			await Assert.That(locationInstance.Longitude).IsEqualTo(longitude);
-			await Assert.That(locationInstance.Accuracy).IsEqualTo(accuracy);
-			await Assert.That(locationInstance.BingMainUrl)
-				.IsEqualTo("https://www.bing.com/maps/embed?h=400&w=500&cp=1~2&lvl=11&typ=d&sty=r&src=SHELL&FORM=MBEDV8");
-			await Assert.That(locationInstance.BingLargeMapUrl)
-				.IsEqualTo("https://www.bing.com/maps?cp=1~2&amp;sty=r&amp;lvl=11&amp;FORM=MBEDLD");
-			await Assert.That(locationInstance.BingDirectionsUrl)
-				.IsEqualTo("https://www.bing.com/maps/directions?cp=1~-2&amp;sty=r&amp;lvl=11&amp;rtp=~pos.1_2____&amp;FORM=MBEDLD");
+			Assert.That(locationInstance.Latitude, Is.EqualTo(latitude));
+			Assert.That(locationInstance.Longitude, Is.EqualTo(longitude));
+			Assert.That(locationInstance.Accuracy, Is.EqualTo(accuracy));
+			Assert.That(locationInstance.BingMainUrl,
+				Is.EqualTo("https://www.bing.com/maps/embed?h=400&w=500&cp=1~2&lvl=11&typ=d&sty=r&src=SHELL&FORM=MBEDV8"));
+			Assert.That(locationInstance.BingLargeMapUrl,
+				Is.EqualTo("https://www.bing.com/maps?cp=1~2&amp;sty=r&amp;lvl=11&amp;FORM=MBEDLD"));
+			Assert.That(locationInstance.BingDirectionsUrl,
+				Is.EqualTo("https://www.bing.com/maps/directions?cp=1~-2&amp;sty=r&amp;lvl=11&amp;rtp=~pos.1_2____&amp;FORM=MBEDLD"));
 
-			await Assert.That(location.Find("#latitudeId").TextContent).Contains("Latitude: 1");
-			await Assert.That(location.Find("#longitudeId").TextContent).Contains("Longitude: 2");
-			await Assert.That(location.Find("#accuracyId").TextContent).Contains("Accuracy: 3");
-			await Assert.That(location.Find("#map").Attributes["src"]!.Value).IsEqualTo(locationInstance.BingMainUrl);
-			await Assert.That(location.Find("#largeMapLink").Attributes["href"]!.Value).IsEqualTo(locationInstance.BingLargeMapUrl);
-			await Assert.That(location.Find("#dirMapLink").Attributes["href"]!.Value).IsEqualTo(locationInstance.BingDirectionsUrl);
+			Assert.That(location.Find("#latitudeId").TextContent,
+				Does.Contain("Latitude: 1"));
+			Assert.That(location.Find("#longitudeId").TextContent,
+				Does.Contain("Longitude: 2"));
+			Assert.That(location.Find("#accuracyId").TextContent,
+				Does.Contain("Accuracy: 3"));
+			Assert.That(location.Find("#map").Attributes["src"]!.Value,
+				Is.EqualTo(locationInstance.BingMainUrl));
+			Assert.That(location.Find("#largeMapLink").Attributes["href"]!.Value,
+				Is.EqualTo(locationInstance.BingLargeMapUrl));
+			Assert.That(location.Find("#dirMapLink").Attributes["href"]!.Value,
+				Is.EqualTo(locationInstance.BingDirectionsUrl));
 		}
 	}
 }

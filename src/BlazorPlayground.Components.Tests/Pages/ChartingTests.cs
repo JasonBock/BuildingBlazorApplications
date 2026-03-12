@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using Microsoft.JSInterop.Infrastructure;
+using NUnit.Framework;
 using Rocks;
 using System.Collections.Immutable;
 using System.Net;
@@ -17,7 +18,7 @@ public sealed class ChartingTests
 	[Test]
 	public async Task CreateSequenceWithEmulatorAsync()
 	{
-		using (Assert.Multiple())
+		using (Assert.EnterMultipleScope())
 		{
 			using var context = new BunitContext();
 			context.Services.AddPlaygroundConfiguration();
@@ -27,11 +28,16 @@ public sealed class ChartingTests
 
 			var chartingInterop = context.JSInterop.SetupModule(
 				Constants.ChartingFileLocation);
-			IReadOnlyList<object?>? arguments = null;
-
 			chartingInterop.SetupVoid(Constants.ChartingMethod, new InvocationMatcher(target =>
 			{
-				arguments = target.Arguments;
+				Assert.That(target.Arguments[0], Is.InstanceOf<ElementReference>());
+
+				var sequence = (ImmutableArray<int>)target.Arguments[1]!;
+				Assert.That(sequence, Is.EquivalentTo([5, 8, 4, 2, 1]));
+
+				var labels = (string[])target.Arguments[2]!;
+				Assert.That(labels, Is.EquivalentTo(["1", "2", "3", "4", "5"]));
+
 				return true;
 			}))
 			.SetVoidResult();
@@ -43,41 +49,37 @@ public sealed class ChartingTests
 
 			charting.Instance.Start = "5";
 			await chartingButton.ClickAsync(new MouseEventArgs());
-
-			using (Assert.Multiple())
-			{
-				await Assert.That(chartingCurrentInput.TextContent).Contains("5, 8, 4, 2, 1");
-				await Assert.That(arguments![0]).IsTypeOf<ElementReference>();
-			
-				var sequence = (ImmutableArray<int>)arguments[1]!;
-				await Assert.That(sequence).IsEquivalentTo([5, 8, 4, 2, 1]);
-
-				var labels = (string[])arguments[2]!;
-				await Assert.That(labels).IsEquivalentTo(["1", "2", "3", "4", "5"]);
-			}
+			Assert.That(chartingCurrentInput.TextContent,
+				Does.Contain("5, 8, 4, 2, 1"));
 		}
 	}
 
 	[Test]
 	public async Task CreateSequenceWithMockAsync()
 	{
-		using (Assert.Multiple())
+		using (Assert.EnterMultipleScope())
 		{
 			using var mockContext = new RockContext();
 			var collatzExpectations = mockContext.Create<ICollatzCreateExpectations>();
 			collatzExpectations.Setups.Generate<int>(5)
 				.ReturnValue([5, 8, 4, 2, 1]);
 
-			object?[]? arguments = null;
-
 			var objectReferenceExpectations = mockContext.Create<IJSObjectReferenceCreateExpectations>();
 			objectReferenceExpectations.Setups.InvokeAsync<IJSVoidResult>(
-				Constants.ChartingMethod, Arg.Any<object?[]?>())
-				.Callback((identifier, args) =>
+				Constants.ChartingMethod,
+				Arg.Validate<object?[]?>(values =>
 				{
-					arguments = args;				
-					return ValueTask.FromResult(new IJSVoidResultMakeExpectations().Instance());
-				});
+					Assert.That(values![0], Is.InstanceOf<ElementReference>());
+
+					var sequence = (ImmutableArray<int>)values[1]!;
+					Assert.That(sequence, Is.EquivalentTo([5, 8, 4, 2, 1]));
+
+					var labels = (string[])values[2]!;
+					Assert.That(labels, Is.EquivalentTo(["1", "2", "3", "4", "5"]));
+
+					return true;
+				}))
+				.ReturnValue(ValueTask.FromResult(new IJSVoidResultMakeExpectations().Instance()));
 
 			var runtimeExpectations = mockContext.Create<IJSRuntimeCreateExpectations>();
 			runtimeExpectations.Setups.InvokeAsync<IJSObjectReference>(
@@ -96,22 +98,15 @@ public sealed class ChartingTests
 
 			charting.Instance.Start = "5";
 			await chartingButton.ClickAsync(new MouseEventArgs());
-			await Assert.That(chartingCurrentInput.TextContent).Contains("5, 8, 4, 2, 1");
-
-			await Assert.That(arguments![0]).IsTypeOf<ElementReference>();
-
-			var sequence = (ImmutableArray<int>)arguments[1]!;
-			await Assert.That(sequence).IsEquivalentTo([5, 8, 4, 2, 1]);
-
-			var labels = (string[])arguments[2]!;
-			await Assert.That(labels).IsEquivalentTo(["1", "2", "3", "4", "5"]);
+			Assert.That(chartingCurrentInput.TextContent,
+				Does.Contain("5, 8, 4, 2, 1"));
 		}
 	}
 
 	[Test]
 	public async Task CreateRandomStartValueWithMockAsync()
 	{
-		using (Assert.Multiple())
+		using (Assert.EnterMultipleScope())
 		{
 			using var response = new HttpResponseMessage
 			{
@@ -119,20 +114,16 @@ public sealed class ChartingTests
 				Content = new StringContent("5")
 			};
 
-			HttpRequestMessage? requestMessage = null;
-			object?[]? arguments = null;
-
 			using var mockContext = new RockContext();
 			var messageHandlerExpectations = mockContext.Create<HttpMessageHandlerCreateExpectations>();
 			messageHandlerExpectations.Setups.SendAsync(
-				Arg.Any<HttpRequestMessage>(), Arg.Any<CancellationToken>())
-				.Callback((message, token) =>
+				Arg.Validate<HttpRequestMessage>(_ =>
 				{
-					requestMessage = message;
-			#pragma warning disable CA2025 // Do not pass 'IDisposable' instances into unawaited tasks
-					return Task.FromResult(response);
-			#pragma warning restore CA2025 // Do not pass 'IDisposable' instances into unawaited tasks
-				});
+					Assert.That(_.RequestUri,
+						Is.EqualTo(new Uri("http://localhost:5128/random")));
+					return true;
+				}), Arg.Any<CancellationToken>())
+				.ReturnValue(Task.FromResult(response));
 
 			using var messageHandler = messageHandlerExpectations.Instance();
 			using var client = new HttpClient(messageHandler);
@@ -147,12 +138,20 @@ public sealed class ChartingTests
 
 			var objectReferenceExpectations = mockContext.Create<IJSObjectReferenceCreateExpectations>();
 			objectReferenceExpectations.Setups.InvokeAsync<IJSVoidResult>(
-				Constants.ChartingMethod, Arg.Any<object?[]?>())
-				.Callback((identifier, args) =>
+				Constants.ChartingMethod,
+				Arg.Validate<object?[]?>(values =>
 				{
-					arguments = args;
-					return ValueTask.FromResult(new IJSVoidResultMakeExpectations().Instance());
-				});
+					Assert.That(values![0], Is.InstanceOf<ElementReference>());
+
+					var sequence = (ImmutableArray<int>)values[1]!;
+					Assert.That(sequence, Is.EquivalentTo([5, 8, 4, 2, 1]));
+
+					var labels = (string[])values[2]!;
+					Assert.That(labels, Is.EquivalentTo(["1", "2", "3", "4", "5"]));
+
+					return true;
+				}))
+				.ReturnValue(ValueTask.FromResult(new IJSVoidResultMakeExpectations().Instance()));
 
 			var runtimeExpectations = mockContext.Create<IJSRuntimeCreateExpectations>();
 			runtimeExpectations.Setups.InvokeAsync<IJSObjectReference>(
@@ -170,18 +169,9 @@ public sealed class ChartingTests
 			var chartingCurrentInput = charting.Find("#currentSequence");
 
 			await chartingButton.ClickAsync(new MouseEventArgs());
-			await Assert.That(charting.Instance.Start).IsEqualTo("5");
-			await Assert.That(chartingCurrentInput.TextContent).Contains("5, 8, 4, 2, 1");
-
-			await Assert.That(requestMessage!.RequestUri).IsEqualTo(new Uri("http://localhost:5128/random"));
-
-			await Assert.That(arguments![0]).IsTypeOf<ElementReference>();
-
-			var sequence = (ImmutableArray<int>)arguments[1]!;
-			await Assert.That(sequence).IsEquivalentTo([5, 8, 4, 2, 1]);
-
-			var labels = (string[])arguments[2]!;
-			await Assert.That(labels).IsEquivalentTo(["1", "2", "3", "4", "5"]);
+			Assert.That(charting.Instance.Start, Is.EqualTo("5"));
+			Assert.That(chartingCurrentInput.TextContent,
+				Does.Contain("5, 8, 4, 2, 1"));
 		}
 	}
 }

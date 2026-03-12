@@ -3,14 +3,15 @@ using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NUnit.Framework;
 using Rocks;
 
 namespace BlazorPlayground.Components.Tests.Pages;
 
-public sealed class CounterTests
+public static class CounterTests
 {
 	[Test]
-	public async Task IncrementViaClickAsync()
+	public static void IncrementViaClick()
 	{
 		var id = Guid.NewGuid();
 		const string renderName = "Server";
@@ -33,15 +34,17 @@ public sealed class CounterTests
 		var counterCount = counter.Find("#count");
 		var counterButton = counter.Find("button");
 
-		using (Assert.Multiple())
+		using (Assert.EnterMultipleScope())
 		{
-			await Assert.That(counterRender.TextContent).Contains(renderName);
-			await Assert.That(counterId.TextContent).Contains(id.ToString());
-			await Assert.That(counterCount.TextContent).Contains("Current count: 0");
-
-			await counterButton.ClickAsync();
-
-			await Assert.That(counterCount.TextContent).Contains("Current count: 1");
+			Assert.That(counterRender.TextContent,
+				Does.Contain(renderName));
+			Assert.That(counterId.TextContent,
+				Does.Contain(id.ToString()));
+			Assert.That(counterCount.TextContent,
+				Does.Contain("Current count: 0"));
+			counterButton.Click();
+			Assert.That(counterCount.TextContent,
+				Does.Contain("Current count: 1"));
 		}
 	}
 }
