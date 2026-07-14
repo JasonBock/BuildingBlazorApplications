@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+	<PropertyGroup>
+		<OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Collatz" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
+		<PackageReference Include="Spackle" />
+	</ItemGroup>
+</Project>
